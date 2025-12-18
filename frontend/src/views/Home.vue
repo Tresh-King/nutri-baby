@@ -23,44 +23,45 @@
         <el-card class="last-feeding-card" shadow="hover" @click="handleFeeding">
             <template #header>
               <div class="card-header">
-                <span>Last Feeding</span>
-                <el-button link>Record</el-button>
+                <span class="card-title">最近喂养</span>
+                <el-button link type="primary">去记录</el-button>
               </div>
             </template>
             <div class="feeding-content">
-              <el-icon :size="20"><Mug /></el-icon>
+              <el-icon :size="24" color="#409EFF"><Mug /></el-icon>
               <span class="feeding-time">{{ lastFeedingTime }}</span>
+              <span class="feeding-detail" v-if="lastFeedingDetail">{{ lastFeedingDetail }}</span>
             </div>
         </el-card>
 
         <!-- Today's Stats -->
-        <div class="section-title">Today's Overview</div>
-        <el-row :gutter="10">
+        <div class="section-title">今日概览</div>
+        <el-row :gutter="16">
           <!-- Feeding -->
-           <el-col :xs="12" :sm="6">
+           <el-col :xs="12" :sm="6" :md="6">
             <el-card shadow="never" class="stat-card">
-              <div class="stat-value">{{ todayStats.breastfeedingCount }} times</div>
-              <div class="stat-label">Breastfeeding</div>
+              <div class="stat-value">{{ todayStats.breastfeedingCount }} 次</div>
+              <div class="stat-label">母乳喂养</div>
             </el-card>
            </el-col>
-           <el-col :xs="12" :sm="6">
+           <el-col :xs="12" :sm="6" :md="6">
             <el-card shadow="never" class="stat-card">
-              <div class="stat-value">{{ todayStats.bottleFeedingCount }} times</div>
-               <div class="stat-label">Bottle ({{ todayStats.totalMilk }}ml)</div>
+              <div class="stat-value">{{ todayStats.bottleFeedingCount }} 次</div>
+               <div class="stat-label">瓶喂 ({{ todayStats.totalMilk }}ml)</div>
             </el-card>
            </el-col>
            <!-- Sleep -->
-           <el-col :xs="12" :sm="6">
+           <el-col :xs="12" :sm="6" :md="6">
             <el-card shadow="never" class="stat-card">
               <div class="stat-value">{{ formatSleepDuration(todayStats.sleepDurationMinutes) }}</div>
-              <div class="stat-label">Sleep</div>
+              <div class="stat-label">睡眠时长</div>
             </el-card>
            </el-col>
            <!-- Diaper -->
-           <el-col :xs="12" :sm="6">
+           <el-col :xs="12" :sm="6" :md="6">
             <el-card shadow="never" class="stat-card">
-               <div class="stat-value">{{ todayStats.diaperCount }} times</div>
-               <div class="stat-label">Diaper</div>
+              <div class="stat-value">{{ todayStats.diaperCount }} 次</div>
+               <div class="stat-label">换尿布</div>
             </el-card>
            </el-col>
         </el-row>
@@ -69,21 +70,29 @@
 
       <el-col :xs="24" :sm="8">
          <!-- Quick Actions -->
-         <el-card class="quick-actions" shadow="never">
+         <el-card class="quick-actions" shadow="hover">
             <template #header>
-               <div class="card-header">Quick Actions</div>
+               <div class="card-header">
+                 <span class="card-title">快速记录</span>
+               </div>
             </template>
             <div class="action-grid">
-               <el-button type="primary" circle size="large" @click="handleFeeding"><el-icon><Mug /></el-icon></el-button>
-               <el-button type="success" circle size="large" @click="handleSleep"><el-icon><Moon /></el-icon></el-button>
-               <el-button type="warning" circle size="large" @click="handleDiaper"><el-icon><ToiletPaper /></el-icon></el-button>
-               <el-button type="info" circle size="large" @click="handleGrowth"><el-icon><TrendCharts /></el-icon></el-button>
-            </div>
-            <div class="action-labels">
-               <span>Feeding</span>
-               <span>Sleep</span>
-               <span>Diaper</span>
-               <span>Growth</span>
+               <div class="action-item" @click="handleFeeding">
+                 <el-button type="primary" circle size="large" class="action-btn"><el-icon :size="20"><Mug /></el-icon></el-button>
+                 <span>喂养</span>
+               </div>
+               <div class="action-item" @click="handleSleep">
+                 <el-button type="success" circle size="large" class="action-btn"><el-icon :size="20"><Moon /></el-icon></el-button>
+                 <span>睡眠</span>
+               </div>
+               <div class="action-item" @click="handleDiaper">
+                 <el-button type="warning" circle size="large" class="action-btn"><el-icon :size="20"><ToiletPaper /></el-icon></el-button>
+                 <span>尿布</span>
+               </div>
+               <div class="action-item" @click="handleGrowth">
+                 <el-button type="info" circle size="large" class="action-btn"><el-icon :size="20"><TrendCharts /></el-icon></el-button>
+                 <span>生长</span>
+               </div>
             </div>
          </el-card>
       </el-col>
@@ -105,10 +114,10 @@ const router = useRouter()
 const babyStore = useBabyStore()
 
 // Mock Data
-const upcomingVaccines = ref(['Hepatitis B (2nd Dose) due on 2025-01-15'])
+const upcomingVaccines = ref(['疫苗提醒：乙肝疫苗（第二针）预计 2025-01-15'])
 const todayTips = ref([
-  { id: '1', title: 'Start tummy time today!', description: '', type: 'Activity', priority: 'high' as const },
-  { id: '2', title: 'Watch for sleep cues.', description: '', type: 'Sleep', priority: 'medium' as const }
+  { id: '1', title: '今天开始尝试俯卧时间 (Tummy Time)!', description: '', type: 'Activity', priority: 'high' as const },
+  { id: '2', title: '注意观察宝宝的睡眠信号', description: '', type: 'Sleep', priority: 'medium' as const }
 ])
 
 interface DailyTips {
@@ -130,11 +139,12 @@ const todayStats = ref({
 const lastFeedingTime = computed(() => {
   return formatRelativeTime(new Date(Date.now() - 1000 * 60 * 120)) // 2 hours ago
 })
+const lastFeedingDetail = ref('母乳亲喂 - 右侧')
 
 const formatSleepDuration = (minutes: number) => {
   const h = Math.floor(minutes / 60)
   const m = minutes % 60
-  return h > 0 ? `${h}h ${m}m` : `${m}m`
+  return h > 0 ? `${h}小时 ${m}分` : `${m}分`
 }
 
 // Actions
@@ -158,30 +168,51 @@ const handleGrowth = () => router.push('/record/growth')
 .last-feeding-card {
   margin-top: 20px;
   cursor: pointer;
+  border-radius: 12px;
 }
 .feeding-content {
   display: flex;
   align-items: center;
-  font-size: 18px;
+  font-size: 16px;
   .el-icon {
-    margin-right: 10px;
+    margin-right: 12px;
+    background: #ecf5ff;
+    padding: 8px;
+    border-radius: 50%;
+  }
+  .feeding-time {
+      font-weight: 500;
+      margin-right: 10px;
+  }
+  .feeding-detail {
+      color: #909399;
+      font-size: 14px;
   }
 }
 .section-title {
-  margin: 20px 0 10px;
-  font-weight: bold;
-  font-size: 16px;
+  margin: 24px 0 12px;
+  font-weight: 600;
+  font-size: 18px;
+  color: #303133;
 }
 .stat-card {
   margin-bottom: 10px;
   text-align: center;
+  border-radius: 12px;
+  transition: transform 0.2s;
+  
+  &:hover {
+      transform: translateY(-2px);
+  }
+
   .stat-value {
-    font-size: 18px;
+    font-size: 20px;
     font-weight: bold;
     color: var(--el-color-primary);
+    margin-bottom: 4px;
   }
   .stat-label {
-    font-size: 12px;
+    font-size: 13px;
     color: var(--el-text-color-secondary);
   }
 }
@@ -190,10 +221,15 @@ const handleGrowth = () => router.push('/record/growth')
   display: flex;
   justify-content: space-between;
   align-items: center;
+  .card-title {
+      font-weight: 600;
+      font-size: 16px;
+  }
 }
 
 .quick-actions {
   margin-top: 20px;
+  border-radius: 12px;
   
   @media (min-width: 768px) {
      margin-top: 0;
@@ -206,15 +242,24 @@ const handleGrowth = () => router.push('/record/growth')
   margin-bottom: 10px;
 }
 
-.action-labels {
-  display: flex;
-  justify-content: space-around;
-  font-size: 12px;
-  color: var(--el-text-color-regular);
-  
-  span {
-    width: 40px; 
-    text-align: center; 
-  }
+.action-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    cursor: pointer;
+    
+    .action-btn {
+        margin-bottom: 8px;
+        transition: transform 0.2s;
+    }
+    
+    &:hover .action-btn {
+        transform: scale(1.1);
+    }
+
+    span {
+        font-size: 13px;
+        color: #606266;
+    }
 }
 </style>

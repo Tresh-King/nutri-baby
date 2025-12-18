@@ -1,31 +1,30 @@
 <template>
   <el-card class="ai-insight-card" v-loading="loading">
     <template #header>
+    <template #header>
       <div class="card-header">
-        <span class="title">
-            <el-icon class="icon-sparkle"><MagicStick /></el-icon> 
-            AI Health Insight
-        </span>
-        <el-button link type="primary" @click="analyze">Refresh</el-button>
+        <div class="header-left">
+             <span class="ai-icon">✨</span>
+             <span class="card-title">宝宝健康周报 (AI)</span>
+        </div>
+        <el-button text size="small" :loading="loading" @click="analyze">
+             {{ loading ? '分析中...' : '刷新分析' }}
+        </el-button>
       </div>
     </template>
-
-    <div v-if="result" class="insight-content">
-        <div class="summary">
-            {{ result.insight }}
+    
+    <div class="insight-content">
+        <div v-if="loading" class="loading-state">
+            <el-skeleton :rows="3" animated />
         </div>
-        
-        <div class="recommendations" v-if="result.recommendations?.length">
-            <h4>Recommendations:</h4>
-            <ul>
-                <li v-for="(rec, index) in result.recommendations" :key="index">
-                    {{ rec }}
-                </li>
-            </ul>
+        <div v-else-if="result" class="markdown-body">
+             <div class="summary">{{ result.insight }}</div>
+             <!-- Recommendations list logic here if changed from previous view -->
         </div>
-    </div>
-    <div v-else class="placeholder">
-        <p>Click refresh to generate AI insights based on recent records.</p>
+        <div v-else class="empty-state">
+            <p>暂无分析数据，点击刷新获取 AI 建议</p>
+            <el-button type="primary" plain @click="analyze">开始分析</el-button>
+        </div>
     </div>
   </el-card>
 </template>

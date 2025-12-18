@@ -2,9 +2,13 @@
   <el-card class="daily-tips-card" shadow="hover">
     <template #header>
       <div class="card-header">
-        <span>Daily Tips</span>
+        <span class="card-title">每日贴士</span>
+        <el-icon class="header-icon"><QuestionFilled /></el-icon>
       </div>
     </template>
+    <div v-if="tips.length === 0" class="empty-tips">
+        暂无贴士
+    </div>
     <div v-for="tip in tips" :key="tip.id" class="tip-item" @click="$emit('tip-click', tip)">
       <el-tag :type="getPriorityType(tip.priority)" size="small" class="tip-type">{{ tip.type }}</el-tag>
       <span class="tip-title">{{ tip.title }}</span>
