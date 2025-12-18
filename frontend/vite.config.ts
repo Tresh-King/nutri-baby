@@ -21,4 +21,25 @@ export default defineConfig({
       '@': path.resolve(__dirname, 'src'),
     },
   },
+  build: {
+    chunkSizeWarningLimit: 1000, // Increase limit slightly
+    rollupOptions: {
+      output: {
+        manualChunks(id) {
+          if (id.includes('node_modules')) {
+            if (id.includes('echarts') || id.includes('zrender')) {
+              return 'echarts'
+            }
+            if (id.includes('element-plus')) {
+              return 'element-plus'
+            }
+            if (id.includes('vue')) {
+              return 'vue-vendor'
+            }
+            return 'vendor' // diverse dependencies
+          }
+        }
+      }
+    }
+  }
 })

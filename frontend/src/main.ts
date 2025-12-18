@@ -1,14 +1,14 @@
 import { createApp } from 'vue'
+import { createPinia } from 'pinia'
 import './style.css'
 import App from './App.vue'
 import router from './router'
-import pinia from './stores'
 import i18n from './i18n'
 import 'element-plus/theme-chalk/dark/css-vars.css'
 
 const app = createApp(App)
 
-app.use(pinia)
+app.use(createPinia())
 app.use(router)
 app.use(i18n)
 
