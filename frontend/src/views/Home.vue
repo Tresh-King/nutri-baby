@@ -98,6 +98,7 @@ import { Mug, Moon, ToiletPaper, TrendCharts } from '@element-plus/icons-vue'
 import DailyTipsCard from '@/components/DailyTipsCard.vue'
 import AIInsightCard from './components/AIInsightCard.vue'
 import { formatRelativeTime } from '@/utils/date'
+import { useBabyStore } from '@/stores/baby'
 
 const router = useRouter()
 // const userStore = useUserStore() // Mock: not used yet

@@ -32,3 +32,13 @@ export const updateBaby = async (id: string, updates: Partial<BabyProfile>) => {
 export const deleteBaby = async (id: string) => {
     await api.delete(`/baby/${id}`)
 }
+
+export const inviteBaby = async (babyId: string, role: string = 'editor') => {
+    const response = await api.post<{ url: string, token: string }>('/baby/invite', { babyId, role })
+    return response.data
+}
+
+export const joinBaby = async (token: string) => {
+    const response = await api.post('/baby/join', { token })
+    return response.data
+}
